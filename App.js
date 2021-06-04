@@ -9,37 +9,34 @@ import {
   TextInput,
   View,
 } from "react-native";
+import GoalInput from "./components/GoalInput";
+import GoalItem from "./components/GoalItem";
 
 export default function App() {
-  const [enteredGoal, setEnteredGoal] = useState("");
   const [goals, setGoals] = useState([]);
 
-  const goalInputHandler = (enteredText) => {
-    setEnteredGoal(enteredText);
+  const addGoalHandler = (goalTitle) => {
+    setGoals((currentGoals) => [
+      ...currentGoals,
+      { key: Math.random().toString(), value: goalTitle },
+    ]);
   };
 
-  const addGoalHandler = () => {
-    setGoals((currentGoals) => [...currentGoals, {key: Math.random().toString(), value: enteredGoal}]);
-    setEnteredGoal("");
+  const removeGoalHandler = (id) => {
+    setGoals((currentGoals) => currentGoals.filter((goal) => goal.key !== id));
   };
 
   return (
     <View style={styles.screen}>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Type your goal"
-          value={enteredGoal}
-          onChangeText={goalInputHandler}
-        />
-        <Button onPress={addGoalHandler} title="ADD" />
-      </View>
+      <GoalInput onAddGoal={addGoalHandler} />
       <FlatList
         data={goals}
         renderItem={(itemData) => (
-          <View style={styles.listItem}>
-            <Text>{itemData.item.value}</Text>
-          </View>
+          <GoalItem
+            title={itemData.item.value}
+            id={itemData.item.key}
+            onDelete={removeGoalHandler}
+          />
         )}
       />
 
@@ -52,18 +49,7 @@ const styles = StyleSheet.create({
   screen: {
     padding: 30,
   },
-  inputContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  input: {
-    borderColor: "black",
-    borderWidth: 1,
-    padding: 10,
-    marginBottom: 5,
-    width: "80%",
-  },
+
   listItem: {
     padding: 11,
     marginVertical: 10,
